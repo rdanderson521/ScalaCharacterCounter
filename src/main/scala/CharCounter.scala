@@ -2,7 +2,8 @@ import akka.actor.{Actor, ActorSystem, Props}
 import scala.collection.mutable.Map
 import scala.io.Source
 
-
+// actor class for counting characters in a string
+// receives a string message and returns a message to the sender with a map of all the characters and the number of occurences
 class CounterActor() extends Actor{
   override def receive : Receive = {
     case s: String => {
@@ -25,6 +26,9 @@ class CounterActor() extends Actor{
   }
 }
 
+// actor class for reading a file, allocating actors to count the characters and merging the maps produced by each child actor
+// receives string message with filename to read
+// receives map  message and merges this with its "master" map, if a map is received for every line prints the map and terminates the actor system
 class ControllerActor extends Actor{
   var numLines: Int= 0
   var allLinesSent: Boolean = false
@@ -57,10 +61,12 @@ class ControllerActor extends Actor{
   }
 }
 
-object Main {
+// main function, starts the actor system and sends the filename to the controller actor
+object CharCounter {
   def main(args: Array[String]) = {
     var sys = ActorSystem("system")
     var actor = sys.actorOf(Props[ControllerActor])
     actor ! "file.txt"
+
   }
 }
